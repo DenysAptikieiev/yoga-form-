@@ -116,75 +116,55 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     let form = document.querySelector('.main-form'),
-        input = form.querySelectorAll('input'),
+        formContact = document.querySelector('#form'),
+        input = document.querySelectorAll('input'),
         statusMessage = document.createElement('div');
-
     statusMessage.classList.add('status');
 
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        this.appendChild(statusMessage);
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-        const formData = new FormData(this);
+    let sendForm = elem => {
+        elem.addEventListener('submit', function(event) {
+            event.preventDefault();
+            elem.appendChild(statusMessage);
+            let formData = new FormData(elem);
 
-        let obj = {};
-        formData.forEach(function (value, key) {
-            obj[key] = value;
+            let obj = {};
+
+            formData.forEach(function (value, key) {
+                obj[key] = value;
+            });
+            const json = JSON.stringify(obj);
+    
+            let postData = data => {
+                return new Promise(function(resolve, reject) {
+                    let request = new XMLHttpRequest();
+                    request.open('POST', 'server.php');
+                    request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+                    request.onreadystatechange = () => {
+                        if (request.readyState < 4) {
+                            resolve();
+                        } if (request.readyState === 4 && request.status === 200) {
+                            resolve();
+                        } else {
+                            reject();
+                        }
+                    };
+                    request.send(data);
+                });
+            };
+            let clearInput = () => {
+                for (let i = 0; i < input.length; i++) {
+                    input[i].value = '';
+                }
+            };
+    
+            postData(json)
+                .then(() => statusMessage.innerHTML = message.loading)
+                .then(() => statusMessage.innerHTML = message.succes)
+                .catch(() => statusMessage.innerHTML = message.failure)
+                .then(clearInput);
         });
-        const json = JSON.stringify(obj);
+    };
 
-        request.send(json);
-
-        request.addEventListener('readystatechange', function () {
-            if (request.readyState < 4) {
-                statusMessage.textContent = message.loading;
-            } if (request.readyState === 4 && request.status === 200) {
-                statusMessage.textContent = message.succes;
-            } else {
-                statusMessage.textContent = message.failure;
-            }
-        });
-
-        for (let i = 0; i < input.length; i++) {
-            input[i].value = '';
-        }
-    });
-    //=====================================================================
-    //FORM CONTACT
-    let formContact = document.querySelector('#form'),
-        inputContact = formContact.querySelectorAll('input');
-
-    formContact.addEventListener('submit', function (event) {
-        event.preventDefault();
-        this.appendChild(statusMessage);
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-        const formData = new FormData(this);
-
-        let obj = {};
-        formData.forEach(function (value, key) {
-            obj[key] = value;
-        });
-        const json = JSON.stringify(obj);
-
-        request.send(json);
-
-        request.addEventListener('readystatechange', function () {
-            if (request.readyState < 4) {
-                statusMessage.textContent = message.loading;
-            } if (request.readyState === 4 && request.status === 200) {
-                statusMessage.textContent = message.succes;
-            } else {
-                statusMessage.textContent = message.failure;
-            }
-        });
-
-        for (let i = 0; i < inputContact.length; i++) {
-            inputContact[i].value = '';
-        }
-
-    });
+    sendForm(form);
+    sendForm(formContact);
 });
