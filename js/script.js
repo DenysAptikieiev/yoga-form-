@@ -122,7 +122,7 @@ window.addEventListener('DOMContentLoaded', () => {
     statusMessage.classList.add('status');
 
     let sendForm = elem => {
-        elem.addEventListener('submit', function(event) {
+        elem.addEventListener('submit', function (event) {
             event.preventDefault();
             elem.appendChild(statusMessage);
             let formData = new FormData(elem);
@@ -133,9 +133,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 obj[key] = value;
             });
             const json = JSON.stringify(obj);
-    
+
             let postData = data => {
-                return new Promise(function(resolve, reject) {
+                return new Promise(function (resolve, reject) {
                     let request = new XMLHttpRequest();
                     request.open('POST', 'server.php');
                     request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
@@ -156,7 +156,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     input[i].value = '';
                 }
             };
-    
+
             postData(json)
                 .then(() => statusMessage.innerHTML = message.loading)
                 .then(() => statusMessage.innerHTML = message.succes)
@@ -167,4 +167,55 @@ window.addEventListener('DOMContentLoaded', () => {
 
     sendForm(form);
     sendForm(formContact);
+    //=======================================================================================
+    //SLIDER
+
+    let slideIndex = 1,
+        slides = document.querySelectorAll('.slider-item'),
+        prev = document.querySelector('.prev'),
+        next = document.querySelector('.next'),
+        dotsWrap = document.querySelector('.slider-dots'),
+        dots = document.querySelectorAll('.dot');
+
+    let showSlides = (n) => {
+        if (n > slides.length) {
+            slideIndex = 1;
+        }
+        if (n < 1) {
+            slideIndex = slides.length;
+        }
+        slides.forEach(item => item.style.display = 'none');
+        dots.forEach(item => item.classList.remove('dot-active'));
+        slides[slideIndex - 1].style.display = 'block';
+        dots[slideIndex - 1].classList.add('dot-active');
+    };
+
+    showSlides(1);
+
+    let plusSlide = n => {
+        showSlides(slideIndex += n);
+    };
+
+    let currentSlide = n => {
+        showSlides(slideIndex = n);
+    };
+
+    prev.addEventListener('click', () => {
+        plusSlide(-1);
+    });
+
+    next.addEventListener('click', () => {
+        plusSlide(1);
+    });
+
+    dotsWrap.addEventListener('click', (event) => {
+        const target = event.target;
+
+        for (let i = 0; i < dots.length + 1; i++) {
+            if (target.classList.contains('dot') && target == dots[i - 1]) {
+                currentSlide(i);
+            }
+        }
+    });
+    //================================================================================
 });
