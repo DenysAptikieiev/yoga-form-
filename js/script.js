@@ -141,9 +141,9 @@ window.addEventListener('DOMContentLoaded', () => {
                     request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
                     request.onreadystatechange = () => {
                         if (request.readyState < 4) {
-                            resolve();
+                            resolve(data);
                         } if (request.readyState === 4 && request.status === 200) {
-                            resolve();
+                            resolve(data);
                         } else {
                             reject();
                         }
@@ -159,7 +159,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
             postData(json)
                 .then(() => statusMessage.innerHTML = message.loading)
-                .then(() => statusMessage.innerHTML = message.succes)
+                .then(() => {
+                    statusMessage.innerHTML = message.succes;
+                    console.log(JSON.parse(json));
+                })
                 .catch(() => statusMessage.innerHTML = message.failure)
                 .then(clearInput);
         });
@@ -218,4 +221,70 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
     //================================================================================
+    //CULC
+
+    let persons = document.querySelectorAll('.counter-block-input')[0],
+        restDays = document.querySelectorAll('.counter-block-input')[1],
+        place = document.querySelector('#select'),
+        totalValue = document.querySelector('#total'),
+        personsSum = 0,
+        daysSum = 0,
+        total = 0;
+
+        totalValue.innerHTML = 0;
+
+        let culc = (persons, restDays, total) => {
+            let sum = (+persons.value + (+restDays.value));
+            total = (sum) * 4000 * place.value;
+        
+            if (persons.value == '' || restDays.value == '' || persons.value == 0 || restDays.value == 0) {
+                total = 0;
+                return total;
+            } else {
+                return total;
+            }
+        };
+
+        persons.addEventListener('input', function() {
+            totalValue.innerHTML = culc(this, restDays, total);
+            if (this.value < 0 || this.value == 0 || isNaN(this.value)) {
+                this.value = '';
+            }
+            // personsSum = +this.value;
+            // total = (daysSum + personsSum) * 4000;
+            // if (restDays.value == '' || personsSum == 0) {
+            //     totalValue.innerHTML = 0;
+            //     total = 0;
+            // } else {
+            //     totalValue.innerHTML = total;
+            // }
+        });
+
+        restDays.addEventListener('input', function() {
+            totalValue.innerHTML = culc(this, persons, total);
+            if (this.value < 0 || this.value == 0 || isNaN(this.value)) {
+                this.value = '';
+            }
+            // daysSum = +this.value;
+            // total = (daysSum + personsSum) * 4000;
+
+            // if (persons.value == ''|| daysSum == 0) {
+            //     totalValue.innerHTML = 0;
+            //     total = 0;
+            // } else {
+            //     totalValue.innerHTML = total;
+            // }
+        });
+
+        place.addEventListener('input', function() {
+            let total = (+persons.value + (+restDays.value)) * 4000 * this.value;
+
+            if (persons.value == '' || restDays.value == '') {
+                totalValue.innerHTML = 0;
+            } else {
+                // let a = total;
+                // totalValue.innerHTML = a * this.options[this.selectedIndex].value;
+                totalValue.innerHTML = total;
+            }
+        });
 });

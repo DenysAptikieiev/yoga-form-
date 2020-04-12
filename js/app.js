@@ -7,3 +7,4 @@
 // }
 
 // showUser.apply(age, ['John', 'Smith']);
+
